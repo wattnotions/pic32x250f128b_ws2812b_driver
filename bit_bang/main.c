@@ -21,7 +21,8 @@
 #define LED_HIGH mPORTASetBits(LED_PIN);
 #define LED_LOW mPORTAClearBits(LED_PIN);
 
-void bitbangBitmapPixel(unsigned int x);
+void bitbangpixel(unsigned int x);
+void send_rgb(char r, char g, char b);
 
 int main() 
 {
@@ -36,15 +37,15 @@ int main()
     {
 		
         j = 200;
-        for(i=0; i<4; i++) bitbangBitmapPixel(125);
+        for(i=0; i<4; i++) send_rgb(0,255,0);
 		 
 		while(j--) {}
 		
     }
 }
 
-void bitbangBitmapPixel(unsigned int x) {
-
+void bitbangpixel(unsigned int x) {
+	
     char i = 24;
 
     do {
@@ -100,4 +101,14 @@ void bitbangBitmapPixel(unsigned int x) {
             Nop();
         }
     } while (i > 0);
+}
+
+void send_rgb(char r, char g, char b) {    //grb
+	
+	unsigned int grb = 0;
+	
+	grb = (g << 16) | (r << 8) | b ;
+	
+	bitbangpixel(grb);
+	
 }
