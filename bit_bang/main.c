@@ -22,7 +22,7 @@
 #define LED_LOW mPORTAClearBits(LED_PIN);
 
 void bitbangpixel(unsigned int x);
-void send_rgb(char r, char g, char b);
+void send_rgb(unsigned int r, unsigned int g, unsigned int b);
 
 int main() 
 {
@@ -37,7 +37,7 @@ int main()
     {
 		
         j = 200;
-        for(i=0; i<4; i++) send_rgb(0,255,0);
+        for(i=0; i<4; i++) send_rgb(0,0,255);//bitbangpixel(0b00000000111111110000000000000000);
 		 
 		while(j--) {}
 		
@@ -103,11 +103,15 @@ void bitbangpixel(unsigned int x) {
     } while (i > 0);
 }
 
-void send_rgb(char r, char g, char b) {    //grb
+void send_rgb(unsigned int r, unsigned int g, unsigned int b) {    //grb
 	
 	unsigned int grb = 0;
 	
-	grb = (g << 16) | (r << 8) | b ;
+	g = g << 16;
+	r = r << 8;
+	
+	
+	grb = g | r | b;
 	
 	bitbangpixel(grb);
 	
