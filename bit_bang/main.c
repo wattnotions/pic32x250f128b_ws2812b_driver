@@ -17,9 +17,9 @@
 #pragma config   FWDTEN    = OFF    // Watchdog
 
 
-#define LED_PIN BIT_0
-#define LED_HIGH mPORTASetBits(LED_PIN);
-#define LED_LOW mPORTAClearBits(LED_PIN);
+#define LED_PIN BIT_13
+#define LED_HIGH mPORTBSetBits(LED_PIN);
+#define LED_LOW mPORTBClearBits(LED_PIN);
 
 void bitbangpixel(unsigned int x);
 void send_rgb(unsigned int r, unsigned int g, unsigned int b);
@@ -27,8 +27,8 @@ void send_rgb(unsigned int r, unsigned int g, unsigned int b);
 int main() 
 {
 	SYSTEMConfig(SYS_FREQ, SYS_CFG_WAIT_STATES | SYS_CFG_PCACHE);
-    mPORTAClearBits(BIT_0);           //Clear bits to ensure the LED is off.
-    mPORTASetPinsDigitalOut(BIT_0);   //Set port as output
+    mPORTBClearBits(BIT_13);           //Clear bits to ensure the LED is off.
+    mPORTBSetPinsDigitalOut(BIT_13);   //Set port as output
 
     int j;
 	int i;
@@ -37,9 +37,9 @@ int main()
     {
 		
         j = 200;
-        for(i=0; i<4; i++) send_rgb(0,0,255);//bitbangpixel(0b00000000111111110000000000000000);
+        for(i=0; i<120; i++) send_rgb(0,0,50);
 		 
-		while(j--) {}
+		while(j--) {}   //50us delay for latch
 		
     }
 }
@@ -115,4 +115,53 @@ void send_rgb(unsigned int r, unsigned int g, unsigned int b) {    //grb
 	
 	bitbangpixel(grb);
 	
+}
+
+unsigned long getRainbow()
+{   // Cycle through the colours of the rainbow (non-uniform brightness however)
+	// Inspired by : http://academe.co.uk/2012/04/arduino-cycling-through-colours-of-the-rainbow/
+	static unsigned Red = 255;
+	static unsigned Green = 0;
+	static unsigned Blue = 0;
+	static int State = 0;
+	switch (State)
+	{
+		case 0:{
+			Green++;
+			if (Green == 255)
+				State = 1;
+			break;
+		}
+		case 1:{
+			Red--;
+			if (Red == 0)
+				State = 2;
+			break;
+		}
+		case 2:{
+			Blue++;
+			if (Blue == 255)
+				State = 3;			
+			break;
+		}
+		case 3:{
+			Green--;
+			if (Green == 0)
+				State = 4;
+			break;
+		}
+		case 4:{
+			Red++;
+			if (Red == 255)
+				State = 5;
+			break;
+		}
+		case 5:{
+			Blue --;
+			if (Blue == 0)
+				State = 0;
+			break;
+		}		
+	}
+	return (Green << 16) + (Red << 8) + Blue;
 }
